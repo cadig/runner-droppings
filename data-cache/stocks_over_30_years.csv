@@ -1,0 +1,114 @@
+Ticker,Company Name,Sector,Exchange,Approx. IPO / Listed Year
+MMM,3M Company,Industrials,NYSE,1916
+ABT,Abbott Laboratories,Health Care,NYSE,1929
+ADP,Automatic Data Processing,Information Technology,NASDAQ,1961
+AEP,American Electric Power,Utilities,NYSE,1906
+AFL,Aflac,Financials,NYSE,1974
+AIG,American International Group,Financials,NYSE,1969
+AN,AutoNation,Consumer Discretionary,NYSE,1991
+AON,Aon plc,Financials,NYSE,1987
+APD,Air Products & Chemicals,Materials,NYSE,1961
+AXP,American Express,Financials,NYSE,1977
+BA,Boeing,Industrials,NYSE,1934
+BAC,Bank of America,Financials,NYSE,1972
+BAX,Baxter International,Health Care,NYSE,1952
+BDX,Becton Dickinson,Health Care,NYSE,1963
+BMY,Bristol-Myers Squibb,Health Care,NYSE,1929
+C,Citigroup,Financials,NYSE,1986
+CAT,Caterpillar,Industrials,NYSE,1929
+CL,Colgate-Palmolive,Consumer Staples,NYSE,1930
+CLX,Clorox,Consumer Staples,NYSE,1969
+CMA,Comerica,Financials,NYSE,1973
+COP,ConocoPhillips,Energy,NYSE,1964
+CPB,Campbell Soup,Consumer Staples,NYSE,1954
+CVS,CVS Health,Health Care,NYSE,1970
+CVX,Chevron,Energy,NYSE,1900
+D,Dominion Energy,Utilities,NYSE,1909
+DD,DuPont,Materials,NYSE,1915
+DE,Deere & Company,Industrials,NYSE,1947
+DIS,Walt Disney,Communication Services,NYSE,1940
+DOV,Dover Corporation,Industrials,NYSE,1955
+DVN,Devon Energy,Energy,NYSE,1988
+ECL,Ecolab,Materials,NYSE,1957
+EL,Estee Lauder,Consumer Staples,NYSE,1995
+EMR,Emerson Electric,Industrials,NYSE,1944
+ENB,Enbridge,Energy,NYSE,1963
+EOG,EOG Resources,Energy,NYSE,1989
+EQT,EQT Corporation,Energy,NYSE,1925
+ETN,Eaton Corporation,Industrials,NYSE,1916
+ETR,Entergy,Utilities,NYSE,1972
+EXC,Exelon,Utilities,NYSE,1929
+F,Ford Motor,Consumer Discretionary,NYSE,1956
+FCX,Freeport-McMoRan,Materials,NYSE,1988
+FDX,FedEx,Industrials,NYSE,1978
+FE,FirstEnergy,Utilities,NYSE,1930
+GD,General Dynamics,Industrials,NYSE,1952
+GE,GE Aerospace,Industrials,NYSE,1892
+GIS,General Mills,Consumer Staples,NYSE,1928
+GL,Globe Life,Financials,NYSE,1980
+GLW,Corning,Information Technology,NYSE,1945
+GPC,Genuine Parts,Consumer Discretionary,NYSE,1948
+GS,Goldman Sachs,Financials,NYSE,1999
+HAL,Halliburton,Energy,NYSE,1948
+HAS,Hasbro,Consumer Discretionary,NASDAQ,1968
+HIG,Hartford Financial Services,Financials,NYSE,1995
+HOG,Harley-Davidson,Consumer Discretionary,NYSE,1986
+HON,Honeywell,Industrials,NASDAQ,1925
+HRL,Hormel Foods,Consumer Staples,NYSE,1927
+HUM,Humana,Health Care,NYSE,1961
+IBM,International Business Machines,Information Technology,NYSE,1916
+ITW,Illinois Tool Works,Industrials,NYSE,1967
+JNJ,Johnson & Johnson,Health Care,NYSE,1944
+JPM,JPMorgan Chase,Financials,NYSE,1969
+KMB,Kimberly-Clark,Consumer Staples,NYSE,1929
+KO,Coca-Cola,Consumer Staples,NYSE,1919
+L,Loews,Financials,NYSE,1959
+LLY,Eli Lilly,Health Care,NYSE,1952
+LMT,Lockheed Martin,Industrials,NYSE,1939
+LOW,Lowe's,Consumer Discretionary,NYSE,1961
+LUV,Southwest Airlines,Industrials,NYSE,1977
+MCD,McDonald's,Consumer Discretionary,NYSE,1965
+MCK,McKesson,Health Care,NYSE,1966
+MKC,McCormick & Company,Consumer Staples,NASDAQ,1929
+MO,Altria Group,Consumer Staples,NYSE,1919
+MRK,Merck,Health Care,NYSE,1934
+MS,Morgan Stanley,Financials,NYSE,1986
+MSFT,Microsoft,Information Technology,NASDAQ,1986
+NEE,NextEra Energy,Utilities,NYSE,1925
+NKE,Nike,Consumer Discretionary,NYSE,1980
+NOC,Northrop Grumman,Industrials,NYSE,1939
+NUE,Nucor,Materials,NYSE,1971
+OMC,Omnicom Group,Communication Services,NYSE,1986
+ORCL,Oracle,Information Technology,NYSE,1986
+OXY,Occidental Petroleum,Energy,NYSE,1964
+PBI,Pitney Bowes,Industrials,NYSE,1923
+PCG,PG&E,Utilities,NYSE,1905
+PEP,PepsiCo,Consumer Staples,NASDAQ,1972
+PFE,Pfizer,Health Care,NYSE,1944
+PG,Procter & Gamble,Consumer Staples,NYSE,1891
+PSA,Public Storage,Real Estate,NYSE,1984
+R,Ryder System,Industrials,NYSE,1955
+RHI,Robert Half International,Industrials,NYSE,1978
+RTX,RTX Corporation,Industrials,NYSE,1934
+SHW,Sherwin-Williams,Materials,NYSE,1964
+SO,Southern Company,Utilities,NYSE,1949
+SPG,Simon Property Group,Real Estate,NYSE,1993
+SWK,Stanley Black & Decker,Industrials,NYSE,1934
+SYY,Sysco,Consumer Staples,NYSE,1970
+T,AT&T,Communication Services,NYSE,1984
+TGT,Target,Consumer Discretionary,NYSE,1967
+TRV,Travelers Companies,Financials,NYSE,1984
+TXN,Texas Instruments,Information Technology,NASDAQ,1953
+UNH,UnitedHealth Group,Health Care,NYSE,1984
+UNP,Union Pacific,Industrials,NYSE,1871
+UPS,United Parcel Service,Industrials,NYSE,1999
+USB,U.S. Bancorp,Financials,NYSE,1929
+VLO,Valero Energy,Energy,NYSE,1981
+VZ,Verizon,Communication Services,NYSE,1984
+WAT,Waters Corporation,Health Care,NYSE,1995
+WFC,Wells Fargo,Financials,NYSE,1962
+WHR,Whirlpool,Consumer Discretionary,NYSE,1929
+WMT,Walmart,Consumer Discretionary,NYSE,1972
+WY,Weyerhaeuser,Real Estate,NYSE,1963
+XOM,ExxonMobil,Energy,NYSE,1920
+XRX,Xerox,Information Technology,NASDAQ,1961
