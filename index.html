@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pynance - SPX Regime Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .chart-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .chart-container::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        .chart-container img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .description {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .description h3 {
+            color: #495057;
+            margin-top: 0;
+        }
+        .description p {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        .screener-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
+            float: left;
+        }
+        .screener-button:hover {
+            background-color: #0056b3;
+        }
+        .regime-status {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 24px;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 15px 20px;
+            margin: 20px 0;
+        }
+        .regime-status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95em;
+            color: #495057;
+        }
+        .status-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.15);
+            flex-shrink: 0;
+        }
+        .status-label {
+            color: #6c757d;
+        }
+        .status-value {
+            font-weight: 600;
+            color: #212529;
+        }
+        .status-value.triggered {
+            color: #dc3545;
+        }
+        .status-value.clear {
+            color: #198754;
+        }
+        .readings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .reading-card {
+            background-color: white;
+            border: 1px solid #e9ecef;
+            border-left: 4px solid #adb5bd;
+            border-radius: 4px;
+            padding: 10px 14px;
+        }
+        .reading-card.triggered {
+            border-left-color: #dc3545;
+        }
+        .reading-card.clear {
+            border-left-color: #198754;
+        }
+        .reading-name {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+        .reading-value {
+            font-size: 1.25em;
+            font-weight: 600;
+            color: #212529;
+        }
+        .reading-note {
+            font-size: 0.8em;
+            color: #6c757d;
+            margin-top: 3px;
+        }
+        .readings-asof {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+
+        <div class="chart-container">
+            <button class="screener-button" onclick="window.open('https://finviz.com/screener.ashx?v=310&f=cap_largeover,fa_epsqoq_high,sh_avgvol_o100,sh_curvol_o100,ta_perf_13wup,ta_sma200_pa&ft=4&o=-perf26w', '_blank')">
+                S03 Stocks
+            </button>
+            <button class="screener-button" style="margin-left: 8px;" onclick="window.open('https://finviz.com/screener.ashx?v=310&f=cap_midover,sh_avgvol_o100,sh_curvol_o100,ta_sma200_pb,sh_price_o10&ft=4&o=-perf26w', '_blank')">
+                S04 Stocks
+            </button>
+            <button class="screener-button" style="margin-left: 8px;" onclick="window.location.href='allocation.html'">
+                Allocation Engine
+            </button>
+            <img src="spx-regime.png" alt="SPX Regime Analysis Chart" id="regime-chart">
+        </div>
+
+        <div class="regime-status" id="regime-status">
+            <div class="regime-status-item">
+                <span class="status-dot" id="status-dot"></span>
+                <span class="status-label">Regime</span>
+                <span class="status-value" id="status-color">-</span>
+            </div>
+            <div class="regime-status-item">
+                <span class="status-label">NYSE AD Z-Score</span>
+                <span class="status-value" id="status-adz">-</span>
+            </div>
+            <div class="regime-status-item">
+                <span class="status-label">Combined MM Signals</span>
+                <span class="status-value" id="status-mm">-</span>
+            </div>
+            <div class="regime-status-item">
+                <span class="status-label">Weekly MACD</span>
+                <span class="status-value" id="status-macd">-</span>
+            </div>
+        </div>
+
+        <div class="description">
+            <h3>Current Component Readings</h3>
+            <p class="readings-asof">Underlying data as of <span id="readings-asof">-</span></p>
+            <div class="readings-grid" id="readings-grid"></div>
+        </div>
+
+        <div class="description">
+            <h3>Market Regime Detection</h3>
+            <p>
+                <strong>Red Background (Risk-Off Regime):</strong> Generated by NYSE Advance/Decline Ratio (ADRN) z-score analysis. 
+                Uses 252-day lookback period with 50-day smoothing to calculate cumulative z-score. Risk-off regime triggers when z-score falls below -1.0 threshold, 
+                indicating broad market weakness and defensive positioning.<br><br>
+                
+                <strong>Color-Coded Momentum Backgrounds:</strong> Based on the count of momentum indicators (MMTW, MMFI, MMTH) below 50% threshold:
+                <ul>
+                    <li><strong>Green:</strong> All 3 momentum signals above 50% (strong bullish momentum)</li>
+                    <li><strong>Yellow:</strong> 1 signal below 50% (mixed momentum, caution warranted)</li>
+                    <li><strong>Orange:</strong> 2 signals below 50% (weak momentum, defensive stance)</li>
+                    <li><strong>Red:</strong> 3 signals below 50% (no momentum, high risk environment)</li>
+                </ul>
+                These breadth indicators provide a comprehensive view of market participation and momentum across multiple timeframes, 
+                helping to gauge overall market health and positioning for risk management decisions.
+            </p>
+        </div>
+
+        <div class="description">
+            <h3>Signal Types</h3>
+            <p>
+                <strong>Strong Entry Signals (MMTH):</strong> Dark green triangles indicate strong entry signals based on 200-day market momentum. 
+                Triggers when MMTH crosses above 25% threshold with no confirmation period required. These represent the most reliable entry signals to get long again after a market sell-off.<br><br>
+                
+                <strong>Light Entry Signals (MMFI & MMTW):</strong> Light green triangles indicate light entry signals based on shorter-term momentum indicators. 
+                MMFI (50-day) and MMTW (20-day) both trigger when crossing above 25% threshold, but require 3-day confirmation periods to avoid false signals. 
+                These provide earlier but less reliable entry signals compared to MMTH.<br><br>
+                
+                <strong>Exit Signals (VIX Bollinger):</strong> Light red downward triangles indicate exit signals based on VIX volatility analysis. 
+                Uses 20-day Bollinger Bands (2 standard deviations) to calculate %B indicator. Exit signal triggers when VIX %B falls below 0, 
+                indicating VIX is below its lower Bollinger Band and potentially signaling complacency or overbought conditions.
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>Generated by <a href="https://github.com/cadig/pynance">cadig/pynance</a></p>
+            <p>Last updated: <span id="last-updated"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // Update the last updated timestamp based on the image file's modification date
+        function updateLastModified() {
+            const img = document.getElementById('regime-chart');
+            const lastUpdatedSpan = document.getElementById('last-updated');
+
+            // Try to get the image's last modified date
+            fetch('spx-regime.png', { method: 'HEAD' })
+                .then(response => {
+                    const lastModified = response.headers.get('Last-Modified');
+                    if (lastModified) {
+                        const date = new Date(lastModified);
+                        lastUpdatedSpan.textContent = date.toLocaleString();
+                    } else {
+                        // Fallback to current date if Last-Modified header is not available
+                        lastUpdatedSpan.textContent = new Date().toLocaleString();
+                    }
+                })
+                .catch(() => {
+                    // Fallback to current date if fetch fails
+                    lastUpdatedSpan.textContent = new Date().toLocaleString();
+                });
+        }
+
+        // Populate the regime indicator legend and the component readings section
+        // from the JSON the regime engine writes alongside the chart.
+        const REGIME_DOT_COLORS = {
+            red: '#dc3545',
+            orange: '#fd7e14',
+            yellow: '#ffc107',
+            green: '#198754'
+        };
+
+        function fmt(value, digits) {
+            return (typeof value === 'number' && isFinite(value))
+                ? value.toFixed(digits)
+                : 'n/a';
+        }
+
+        function readingCard(name, value, note, triggered) {
+            const state = triggered === null ? '' : (triggered ? ' triggered' : ' clear');
+            return '<div class="reading-card' + state + '">'
+                + '<div class="reading-name">' + name + '</div>'
+                + '<div class="reading-value">' + value + '</div>'
+                + (note ? '<div class="reading-note">' + note + '</div>' : '')
+                + '</div>';
+        }
+
+        function renderRegimeData(data) {
+            const r = data.readings || {};
+            const color = data.background_color || 'unknown';
+
+            // Legend below the chart: what is driving the background color
+            document.getElementById('status-dot').style.backgroundColor =
+                REGIME_DOT_COLORS[color] || '#adb5bd';
+            document.getElementById('status-color').textContent = color.toUpperCase();
+
+            const adThreshold = (typeof r.nyse_ad_zscore_threshold === 'number')
+                ? r.nyse_ad_zscore_threshold : -1.0;
+            const adRiskOff = data.nyse_cumulative_ad_zscore === false;
+            const adEl = document.getElementById('status-adz');
+            adEl.textContent = fmt(r.nyse_ad_zscore, 2) + (adRiskOff
+                ? ' (risk-off, below ' + adThreshold.toFixed(1) + ')'
+                : ' (risk-on, above ' + adThreshold.toFixed(1) + ')');
+            adEl.className = 'status-value ' + (adRiskOff ? 'triggered' : 'clear');
+
+            const mmCount = data.combined_mm_signals;
+            const mmEl = document.getElementById('status-mm');
+            mmEl.textContent = (typeof mmCount === 'number' ? mmCount : '-') + ' of 3 below '
+                + fmt(r.mm_threshold, 0) + '%';
+            mmEl.className = 'status-value ' + (mmCount >= 3 ? 'triggered' : (mmCount > 0 ? '' : 'clear'));
+
+            const macdGreen = data.weekly_macd_green;
+            const macd = r.weekly_macd || {};
+            const macdEl = document.getElementById('status-macd');
+            macdEl.textContent = (macdGreen ? 'GREEN' : 'RED')
+                + ' (hist ' + fmt(macd.histogram, 1) + ')';
+            macdEl.className = 'status-value ' + (macdGreen ? 'clear' : 'triggered');
+
+            // Component readings section
+            document.getElementById('readings-asof').textContent = r.data_date || 'n/a';
+
+            const cards = [];
+            cards.push(readingCard('NYSE AD Z-Score', fmt(r.nyse_ad_zscore, 2),
+                'Risk-off below ' + adThreshold.toFixed(1), adRiskOff));
+
+            const indicators = r.mm_indicators || {};
+            Object.keys(indicators).forEach(function (name) {
+                const ind = indicators[name];
+                cards.push(readingCard(name + ' (' + ind.period + '-day)',
+                    fmt(ind.value, 2) + '%',
+                    'Threshold ' + fmt(r.mm_threshold, 0) + '%',
+                    ind.below_threshold));
+            });
+
+            cards.push(readingCard('Combined MM Signals',
+                (typeof mmCount === 'number' ? mmCount : 'n/a') + ' / 3',
+                'Count below threshold', mmCount >= 3));
+
+            cards.push(readingCard('Weekly MACD (12/26/9)', fmt(macd.histogram, 1),
+                'MACD ' + fmt(macd.macd, 1) + ' vs signal ' + fmt(macd.signal, 1),
+                !macdGreen));
+
+            cards.push(readingCard('SPX Close', fmt(r.spx_close, 2),
+                '200-day MA ' + fmt(r.spx_200ma, 2), data.above_200ma === false));
+
+            if (typeof r.vix_close === 'number') {
+                cards.push(readingCard('VIX Close', fmt(r.vix_close, 2),
+                    'Bollinger %B ' + fmt(r.vix_percent_b, 2),
+                    data.vix_bollinger_exit === true));
+            }
+
+            document.getElementById('readings-grid').innerHTML = cards.join('');
+        }
+
+        function loadRegimeData() {
+            fetch('spx-regime-results.json', { cache: 'no-store' })
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(renderRegimeData)
+                .catch(function () {
+                    document.getElementById('regime-status').innerHTML =
+                        '<span style="color: #dc3545;">Regime results not available.</span>';
+                    document.getElementById('readings-grid').innerHTML =
+                        '<p style="color: #dc3545;">Component readings not available.</p>';
+                });
+        }
+
+        // Update the timestamp when the page loads
+        updateLastModified();
+        loadRegimeData();
+
+        // Add error handling for the image
+        document.getElementById('regime-chart').onerror = function() {
+            this.style.display = 'none';
+            this.parentElement.innerHTML = '<p style="color: #dc3545;">Chart image not found. Please run the analysis to generate the visualization.</p>';
+        };
+    </script>
+</body>

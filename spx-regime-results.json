@@ -1,0 +1,46 @@
+{
+  "datetime": "2026-09-26T00:45:26.845812",
+  "background_color": "red",
+  "above_200ma": true,
+  "weekly_macd_green": false,
+  "VIX_close": 14.87,
+  "nyse_cumulative_ad_zscore": true,
+  "mmth_cross": false,
+  "mmtw_cross": false,
+  "mmfi_cross": false,
+  "vix_bollinger_exit": false,
+  "combined_mm_signals": 3,
+  "readings": {
+    "data_date": "2026-09-25",
+    "spx_close": 7743.41,
+    "spx_200ma": 7545.784000000001,
+    "nyse_ad_zscore": 0.009210858849831142,
+    "nyse_ad_zscore_threshold": -1.0,
+    "mm_threshold": 50.0,
+    "mm_indicators": {
+      "MMTW": {
+        "period": 20,
+        "value": 29.44,
+        "below_threshold": true
+      },
+      "MMFI": {
+        "period": 50,
+        "value": 30.23,
+        "below_threshold": true
+      },
+      "MMTH": {
+        "period": 200,
+        "value": 45.78,
+        "below_threshold": true
+      }
+    },
+    "vix_close": 14.87,
+    "vix_percent_b": 0.32118930316261096,
+    "weekly_macd": {
+      "macd": null,
+      "signal": null,
+      "histogram": null,
+      "green": false
+    }
+  }
+}
