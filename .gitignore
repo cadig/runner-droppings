@@ -1,0 +1,4 @@
+
+# MCP server configs (may hold credentials)
+.mcp.json
+.mcp.*.json
