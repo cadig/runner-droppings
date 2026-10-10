@@ -1,0 +1,12 @@
+{"datetime": "2026-09-30T14:11:07.366915", "data_date": "2026-09-29", "background_color": "red", "above_200ma": true, "weekly_macd_green": false, "vix_close": 16.04, "qqq_background_color": "yellow"}
+{"datetime": "2026-09-30T14:29:15.708286", "data_date": "2026-09-29", "background_color": "red", "above_200ma": true, "weekly_macd_green": false, "vix_close": 16.04, "qqq_background_color": "yellow"}
+{"datetime": "2026-10-01T01:24:10.963388", "data_date": "2026-09-30", "background_color": "red", "above_200ma": true, "weekly_macd_green": false, "vix_close": 16.34, "qqq_background_color": "orange"}
+{"datetime": "2026-10-02T01:45:24.133009", "data_date": "2026-10-01", "background_color": "red", "above_200ma": true, "weekly_macd_green": false, "vix_close": 16.39, "qqq_background_color": "orange"}
+{"datetime": "2026-10-03T01:17:20.232943", "data_date": "2026-10-02", "background_color": "red", "above_200ma": true, "weekly_macd_green": false, "vix_close": 15.31, "qqq_background_color": "orange"}
+{"datetime": "2026-10-06T02:23:32.989831", "data_date": "2026-10-05", "background_color": "red", "above_200ma": true, "weekly_macd_green": false, "vix_close": 15.52, "qqq_background_color": "red"}
+{"datetime": "2026-10-06T14:45:21.597005", "data_date": "2026-10-05", "background_color": "red", "above_200ma": true, "weekly_macd_green": false, "vix_close": 15.52, "qqq_background_color": "yellow"}
+{"datetime": "2026-10-06T14:53:04.255385", "data_date": "2026-10-05", "background_color": "red", "above_200ma": true, "weekly_macd_green": false, "vix_close": 15.52, "qqq_background_color": "yellow"}
+{"datetime": "2026-10-07T01:42:46.997129", "data_date": "2026-10-06", "background_color": "red", "above_200ma": true, "weekly_macd_green": false, "vix_close": 15.01, "qqq_background_color": "yellow"}
+{"datetime": "2026-10-08T02:10:38.595473", "data_date": "2026-10-07", "background_color": "red", "above_200ma": true, "weekly_macd_green": false, "vix_close": 15.08, "qqq_background_color": "green"}
+{"datetime": "2026-10-09T02:22:52.996128", "data_date": "2026-10-08", "background_color": "red", "above_200ma": true, "weekly_macd_green": false, "vix_close": 15.41, "qqq_background_color": "yellow"}
+{"datetime": "2026-10-10T01:51:13.764423", "data_date": "2026-10-09", "background_color": "red", "above_200ma": true, "weekly_macd_green": false, "vix_close": 14.84, "qqq_background_color": "yellow"}

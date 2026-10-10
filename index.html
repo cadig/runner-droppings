@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pynance - Macro Regime</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        :root {
+            --bg-page:        #1a1a1a;
+            --bg-surface:     #242424;
+            --bg-surface-alt: #2c2c2c;
+            --bg-hover:       #343434;
+            --text-1:         #e0e0e0;
+            --text-2:         #9e9e9e;
+            --text-3:         #686868;
+            --border:         #3d3d3d;
+            --border-soft:    #313131;
+            --scroll-thumb:   #3a3a3a;
+            --scroll-thumb-hover: #4a4a4a;
+            --accent:         #42a5f5;
+            --link:           #64b5f6;
+            --g-fg: #81c784;
+            --o-fg: #ffb74d;
+            --r-fg: #ef9a9a;
+        }
+        html.light-mode {
+            --bg-page:        #f5f5f5;
+            --bg-surface:     #ffffff;
+            --bg-surface-alt: #fafafa;
+            --bg-hover:       #f0f0f0;
+            --text-1:         #333333;
+            --text-2:         #666666;
+            --text-3:         #999999;
+            --border:         #e0e0e0;
+            --border-soft:    #eeeeee;
+            --scroll-thumb:   #d6d6d6;
+            --scroll-thumb-hover: #bdbdbd;
+            --accent:         #1976d2;
+            --link:           #007bff;
+            --g-fg: #2e7d32;
+            --o-fg: #e65100;
+            --r-fg: #c62828;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-page);
+            color: var(--text-1);
+        }
+        a { color: var(--link); }
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 320px;
+            min-width: 320px;
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        /* Thin scrollbars that sit on the page colors instead of the OS default */
+        html, .sidebar {
+            scrollbar-width: thin;
+            scrollbar-color: var(--scroll-thumb) transparent;
+        }
+        html { background-color: var(--bg-page); }
+        html::-webkit-scrollbar, .sidebar::-webkit-scrollbar { width: 8px; }
+        html::-webkit-scrollbar-track, .sidebar::-webkit-scrollbar-track { background: transparent; }
+        html::-webkit-scrollbar-thumb, .sidebar::-webkit-scrollbar-thumb {
+            background: var(--scroll-thumb);
+            border-radius: 4px;
+        }
+        .sidebar::-webkit-scrollbar-thumb { border: 2px solid var(--bg-surface); }
+        html::-webkit-scrollbar-thumb { border: 2px solid var(--bg-page); }
+        html::-webkit-scrollbar-thumb:hover, .sidebar::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); }
+        .sidebar-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .sidebar h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--text-1);
+        }
+        .theme-toggle-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 3px 8px;
+            font-size: 0.78rem;
+            color: var(--text-2);
+            line-height: 1.4;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .theme-toggle-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-1);
+        }
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+        .sidebar-section h3 {
+            margin: 0 0 4px 0;
+            font-size: 0.85rem;
+            color: var(--text-2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .sidebar-asof {
+            font-size: 0.75rem;
+            color: var(--text-3);
+            margin-bottom: 6px;
+        }
+        .regime-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-soft);
+            font-size: 0.9rem;
+        }
+        .regime-row:last-child { border-bottom: none; }
+        .regime-label { color: var(--text-2); white-space: nowrap; }
+        .regime-value {
+            font-weight: 500;
+            color: var(--text-1);
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+        .regime-value.triggered { color: var(--r-fg); }
+        .regime-value.clear { color: var(--g-fg); }
+        .regime-value.warn { color: var(--o-fg); }
+        .regime-sub {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: normal;
+            color: var(--text-3);
+        }
+        .regime-color {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+        .unavailable {
+            font-size: 0.85rem;
+            color: var(--r-fg);
+        }
+
+        .main {
+            flex: 1;
+            padding: 20px;
+            min-width: 0;
+        }
+        .page-header {
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .page-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--text-1);
+        }
+        .last-updated {
+            font-size: 0.9rem;
+            color: var(--text-2);
+        }
+        .last-updated strong { color: var(--text-1); }
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .screener-button {
+            background: none;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .screener-button:hover {
+            background: var(--bg-hover);
+        }
+
+        .chart-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .chart-card h2 {
+            margin: 0 0 12px 0;
+            font-size: 1.05rem;
+            color: var(--text-1);
+        }
+        .chart-card img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            background: #ffffff;
+        }
+        .chart-missing {
+            color: var(--r-fg);
+            font-size: 0.9rem;
+        }
+        details.about {
+            margin-top: 12px;
+            border-top: 1px solid var(--border-soft);
+            padding-top: 8px;
+        }
+        details.about summary {
+            cursor: pointer;
+            color: var(--text-2);
+            font-size: 0.85rem;
+            user-select: none;
+        }
+        details.about summary:hover { color: var(--text-1); }
+        details.about p,
+        details.about ul {
+            color: var(--text-2);
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+        details.about strong { color: var(--text-1); }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--text-3);
+            font-size: 0.85em;
+        }
+
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar {
+                width: 100%;
+                min-width: 0;
+                height: auto;
+                position: static;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 16px;
+            }
+            .main { padding: 16px; }
+            .page-header { padding: 12px 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <div>
+            <h1>Macro Regime</h1>
+            <div class="last-updated">Last updated: <strong id="last-updated">-</strong></div>
+        </div>
+        <div class="header-actions">
+            <button class="screener-button" onclick="window.open('https://finviz.com/screener.ashx?v=310&f=cap_midunder,fa_epsqoq_high,sh_avgvol_o100,sh_price_o5,ta_perf_13wup,ta_sma200_pa&ft=4&o=-perf26w', '_blank')">S03 Stocks</button>
+            <button class="screener-button" onclick="window.open('https://finviz.com/screener.ashx?v=310&f=cap_midover,sh_avgvol_o1000,sh_price_o10,ta_sma200_pb&ft=4&o=-rsi', '_blank')">S04 Stocks</button>
+                    <button class="screener-button" onclick="window.open('https://finviz.com/screener.ashx?v=310&f=idx_sp500,sh_avgvol_o100,sh_curvol_o100,ta_perf_13wup,ta_sma200_pa&ft=4&o=-perf26w', '_blank')">S09 Stocks</button>
+        </div>
+    </div>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <h2>Regime Metrics</h2>
+                <button type="button" id="theme-toggle" class="theme-toggle-btn" title="Toggle light/dark mode">Light</button>
+            </div>
+            <div class="sidebar-section" id="sb-spx"><h3>SPX Regime</h3><div class="sidebar-asof">Loading...</div></div>
+            <div class="sidebar-section" id="sb-qqq"><h3>QQQ Regime (Nasdaq 100 breadth)</h3><div class="sidebar-asof">Loading...</div></div>
+            <div class="sidebar-section" id="sb-banana"><h3>BTC Banana</h3><div class="sidebar-asof">Loading...</div></div>
+            <div class="sidebar-section" id="sb-rates"><h3>US Rates</h3><div class="sidebar-asof">Loading...</div></div>
+        </aside>
+
+        <main class="main">
+            <section class="chart-card">
+                <h2>SPY Regime (NYSE breadth)</h2>
+                <img src="spx-regime.png" alt="SPY Regime Analysis Chart" id="regime-chart">
+                <details class="about">
+                    <summary>About this chart</summary>
+                    <p>
+                        <strong>Red Background (Risk-Off Regime):</strong> Generated by NYSE Advance/Decline Ratio (ADRN) z-score analysis.
+                        Uses 252-day lookback period with 50-day smoothing to calculate cumulative z-score. Risk-off regime triggers when z-score falls below -1.0 threshold,
+                        indicating broad market weakness and defensive positioning.
+                    </p>
+                    <p><strong>Color-Coded Momentum Backgrounds:</strong> Based on the count of momentum indicators (MMTW, MMFI, MMTH) below 50% threshold:</p>
+                    <ul>
+                        <li><strong>Green:</strong> All 3 momentum signals above 50% (strong bullish momentum)</li>
+                        <li><strong>Yellow:</strong> 1 signal below 50% (mixed momentum, caution warranted)</li>
+                        <li><strong>Orange:</strong> 2 signals below 50% (weak momentum, defensive stance)</li>
+                        <li><strong>Red:</strong> 3 signals below 50% (no momentum, high risk environment)</li>
+                    </ul>
+                    <p>
+                        These breadth indicators provide a comprehensive view of market participation and momentum across multiple timeframes,
+                        helping to gauge overall market health and positioning for risk management decisions.
+                    </p>
+                    <p>
+                        <strong>Strong Entry Signals (MMTH):</strong> Dark green triangles indicate strong entry signals based on 200-day market momentum.
+                        Triggers when MMTH crosses above 25% threshold with no confirmation period required. These represent the most reliable entry signals to get long again after a market sell-off.
+                    </p>
+                    <p>
+                        <strong>Light Entry Signals (MMFI &amp; MMTW):</strong> Light green triangles indicate light entry signals based on shorter-term momentum indicators.
+                        MMFI (50-day) and MMTW (20-day) both trigger when crossing above 25% threshold, but require 3-day confirmation periods to avoid false signals.
+                        These provide earlier but less reliable entry signals compared to MMTH.
+                    </p>
+                    <p>
+                        <strong>Exit Signals (VIX Bollinger):</strong> Light red downward triangles indicate exit signals based on VIX volatility analysis.
+                        Uses 20-day Bollinger Bands (2 standard deviations) to calculate %B indicator. Exit signal triggers when VIX %B falls below 0,
+                        indicating VIX is below its lower Bollinger Band and potentially signaling complacency or overbought conditions.
+                    </p>
+                </details>
+            </section>
+
+            <section class="chart-card">
+                <h2>QQQ Regime (Nasdaq 100 breadth)</h2>
+                <img src="qqq-regime.png" alt="QQQ Regime Chart" id="qqq-chart">
+                <details class="about">
+                    <summary>About this chart</summary>
+                    <p>
+                        QQQ with its 200-day moving average. Same logic as the chart above: the NYSE AD z-score
+                        (&lt; -1.0) is the red override, otherwise the background counts how many Nasdaq 100 breadth
+                        series (NDTW 20-day, NDFI 50-day, NDTH 200-day % above MA) are below 50% -
+                        3 red, 2 orange, 1 yellow, 0 green. Nasdaq 100 breadth is the preferred regime for the
+                        QQQ universe (pynance-research RF-49 to RF-51). A second red override (hatched) is the
+                        QQQ volatility latch: red once QQQ 10-day realized vol rises above 35%, and held until it
+                        falls below 20% (pynance-research RF-77/78, part of the Roth QLD gate). Descriptive only -
+                        no system reads it.
+                    </p>
+                </details>
+            </section>
+
+            <section class="chart-card">
+                <h2>BTC Banana (log-log channel)</h2>
+                <img src="btc-banana.png" alt="BTC Banana Chart" id="banana-chart">
+                <details class="about">
+                    <summary>About this chart</summary>
+                    <p>
+                        Algorithmic version of Peter Brandt's log-scale parabolic BTC channel. Support is a quadratic in
+                        (log time, log price) fitted to each cycle low; resistance is the same fitted to each cycle high.
+                        Cycle highs are all-time highs followed by a 50%+ drawdown; the low after the latest high is
+                        provisional until price triples from it. Score = position inside the channel in log space
+                        (0 = support, 1 = resistance); green zone &lt; 0.25, red zone &gt; 0.8. Refitted daily on all history,
+                        so the bands shift as pivots confirm. Descriptive only - no system trades on it.
+                        See pynance-research FINDINGS RF-46.
+                    </p>
+                </details>
+            </section>
+
+            <section class="chart-card">
+                <h2>US Rates (last 5 years)</h2>
+                <img src="rates.png" alt="US Rates Chart" id="rates-chart">
+                <details class="about">
+                    <summary>About this chart</summary>
+                    <p>
+                        Effective Fed Funds rate (FRED:DFF, daily) against the 3-month, 2-year, 10-year and 30-year
+                        Treasury yields (TradingView TVC:US03MY / US02Y / US10Y / US30Y), all in percent over the
+                        trailing 5 years. The sidebar shows the latest print and its 1-year change.
+                        Descriptive only - no system reads it.
+                    </p>
+                </details>
+            </section>
+
+            <div class="footer">
+                Generated by <a href="https://github.com/cadig/pynance">cadig/pynance</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const REGIME_COLORS = {
+            red: '#dc3545',
+            orange: '#fd7e14',
+            yellow: '#ffc107',
+            green: '#198754'
+        };
+
+        function fmt(value, digits) {
+            return (typeof value === 'number' && isFinite(value))
+                ? value.toFixed(digits)
+                : 'n/a';
+        }
+
+        function usd(v) {
+            return (typeof v === 'number' && isFinite(v)) ? '$' + Math.round(v).toLocaleString() : 'n/a';
+        }
+
+        // state: true = triggered (red), false = clear (green), 'warn' = orange, null = neutral
+        function row(label, value, state, sub) {
+            let cls = '';
+            if (state === true) cls = ' triggered';
+            else if (state === false) cls = ' clear';
+            else if (state === 'warn') cls = ' warn';
+            return '<div class="regime-row"><span class="regime-label">' + label + '</span>'
+                + '<span class="regime-value' + cls + '">' + value
+                + (sub ? '<span class="regime-sub">' + sub + '</span>' : '')
+                + '</span></div>';
+        }
+
+        function colorRow(label, color) {
+            const c = (color || 'unknown').toLowerCase();
+            return '<div class="regime-row"><span class="regime-label">' + label + '</span>'
+                + '<span class="regime-value"><span class="regime-color" style="background:'
+                + (REGIME_COLORS[c] || '#9e9e9e') + '"></span>' + c.toUpperCase() + '</span></div>';
+        }
+
+        function section(id, title, asof, rows) {
+            document.getElementById(id).innerHTML = '<h3>' + title + '</h3>'
+                + (asof ? '<div class="sidebar-asof">' + asof + '</div>' : '')
+                + rows.join('');
+        }
+
+        function sectionUnavailable(id, title, what) {
+            document.getElementById(id).innerHTML = '<h3>' + title + '</h3>'
+                + '<div class="unavailable">' + what + ' not available.</div>';
+        }
+
+        function countState(count, total) {
+            if (typeof count !== 'number') return null;
+            if (count >= total) return true;
+            return count > 0 ? 'warn' : false;
+        }
+
+        function breadthRows(indicators, threshold) {
+            return Object.keys(indicators || {}).map(function (name) {
+                const ind = indicators[name];
+                return row(name + ' (' + ind.period + 'd)', fmt(ind.value, 1) + '%',
+                    ind.below_threshold, 'threshold ' + fmt(threshold, 0) + '%');
+            });
+        }
+
+        function renderSpx(data) {
+            const r = data.readings || {};
+            const adThreshold = (typeof r.nyse_ad_zscore_threshold === 'number') ? r.nyse_ad_zscore_threshold : -1.0;
+            const adRiskOff = data.nyse_cumulative_ad_zscore === false;
+            const mmCount = data.combined_mm_signals;
+            const macd = r.weekly_macd || {};
+            const rows = [
+                colorRow('Regime', data.background_color),
+                row('NYSE AD Z-Score', fmt(r.nyse_ad_zscore, 2), adRiskOff,
+                    (adRiskOff ? 'risk-off' : 'risk-on') + ', threshold ' + adThreshold.toFixed(1)),
+                row('MM Signals Below', (typeof mmCount === 'number' ? mmCount : '-') + ' / 3',
+                    countState(mmCount, 3)),
+            ].concat(breadthRows(r.mm_indicators, r.mm_threshold));
+            rows.push(row('Weekly MACD', data.weekly_macd_green ? 'GREEN' : 'RED', !data.weekly_macd_green,
+                'hist ' + fmt(macd.histogram, 1) + ' (MACD ' + fmt(macd.macd, 1) + ' / sig ' + fmt(macd.signal, 1) + ')'));
+            rows.push(row('SPX Close', fmt(r.spx_close, 2), data.above_200ma === false,
+                '200d MA ' + fmt(r.spx_200ma, 2)));
+            if (typeof r.vix_close === 'number') {
+                rows.push(row('VIX Close', fmt(r.vix_close, 2), data.vix_bollinger_exit === true ? 'warn' : null,
+                    'Bollinger %B ' + fmt(r.vix_percent_b, 2)));
+            }
+            section('sb-spx', 'SPX Regime', 'Data as of ' + (r.data_date || 'n/a'), rows);
+
+            const q = r.qqq_regime;
+            if (!q) {
+                sectionUnavailable('sb-qqq', 'QQQ Regime (Nasdaq 100 breadth)', 'ND readings');
+                return;
+            }
+            const nInd = Object.keys(q.nd_indicators || {}).length;
+            const qRows = [
+                colorRow('Regime', q.background_color),
+                row('NYSE AD Z-Score', fmt(r.nyse_ad_zscore, 2), adRiskOff,
+                    (adRiskOff ? 'risk-off, forces RED' : 'risk-on') + ', threshold ' + adThreshold.toFixed(1)),
+                row('ND Signals Below', (typeof q.combined_nd_signals === 'number' ? q.combined_nd_signals : '-') + ' / ' + nInd,
+                    countState(q.combined_nd_signals, nInd)),
+            ].concat(breadthRows(q.nd_indicators, q.nd_threshold));
+            const vl = q.vol_latch;
+            if (vl && vl.enabled) {
+                qRows.push(row('QQQ ' + vl.lookback + 'd Realized Vol', fmt(vl.realized_vol, 1) + '%',
+                    vl.red === true,
+                    (vl.red ? 'latched, forces RED until < ' + fmt(vl.in_level, 0) + '%'
+                        : 'clear, latches above ' + fmt(vl.out_level, 0) + '%')));
+            }
+            qRows.push(row('QQQ Close', fmt(q.qqq_close, 2),
+                (typeof q.qqq_close === 'number' && typeof q.qqq_200ma === 'number') ? q.qqq_close < q.qqq_200ma : null,
+                '200d MA ' + fmt(q.qqq_200ma, 2)));
+            section('sb-qqq', 'QQQ Regime (Nasdaq 100 breadth)', 'Data as of ' + (r.data_date || 'n/a'), qRows);
+        }
+
+        function renderBanana(d) {
+            const score = d.score;
+            const scoreState = score < 0.25 ? false : (score > 0.8 ? true : null);
+            section('sb-banana', 'BTC Banana', 'Data as of ' + d.asof, [
+                row('BTC', usd(d.price), null),
+                row('Score', fmt(score, 2), scoreState, '0 = support, 1 = resistance'),
+                row('Support', usd(d.lower), null),
+                row('Center', usd(d.mid), null),
+                row('Resistance', usd(d.upper), null),
+                row('Since Cycle High', d.days_since_cycle_high + ' days', null,
+                    'drawdown ' + (d.drawdown_from_cycle_high * 100).toFixed(0) + '%'),
+            ]);
+        }
+
+        function renderRates(d) {
+            const order = ['fed_funds', 'us03m', 'us02y', 'us10y', 'us30y'];
+            let asof = null;
+            const rows = order.filter(function (k) { return d[k]; }).map(function (k) {
+                const r = d[k];
+                if (!asof || r.asof > asof) asof = r.asof;
+                const chg = (typeof r.change_1y === 'number')
+                    ? (r.change_1y >= 0 ? '+' : '') + r.change_1y.toFixed(2) + ' pts vs 1y ago'
+                    : '';
+                return row(r.label, fmt(r.value, 2) + '%', null, chg);
+            });
+            section('sb-rates', 'US Rates', 'Data as of ' + (asof || 'n/a'), rows);
+        }
+
+        function loadJson(url, render, onFail) {
+            fetch(url, { cache: 'no-store' })
+                .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+                .then(render)
+                .catch(onFail);
+        }
+
+        // Last-Modified of the regime chart = when the pipeline last published.
+        function updateLastModified(fallbackIso) {
+            const el = document.getElementById('last-updated');
+            fetch('spx-regime.png', { method: 'HEAD', cache: 'no-store' })
+                .then(function (response) {
+                    const lm = response.headers.get('Last-Modified');
+                    el.textContent = lm ? new Date(lm).toLocaleString() : (fallbackIso || 'n/a');
+                })
+                .catch(function () { el.textContent = fallbackIso || 'n/a'; });
+        }
+
+        function hideOnError(id) {
+            document.getElementById(id).onerror = function () {
+                this.outerHTML = '<p class="chart-missing">Chart image not found.</p>';
+            };
+        }
+
+        function initThemeToggle() {
+            const btn = document.getElementById('theme-toggle');
+            let stored = null;
+            try { stored = localStorage.getItem('pynance-theme'); } catch (e) { /* storage blocked */ }
+            if (stored === 'light') {
+                document.documentElement.classList.add('light-mode');
+                btn.textContent = 'Dark';
+            }
+            btn.addEventListener('click', function () {
+                const isLight = document.documentElement.classList.toggle('light-mode');
+                this.textContent = isLight ? 'Dark' : 'Light';
+                try { localStorage.setItem('pynance-theme', isLight ? 'light' : 'dark'); } catch (e) { /* storage blocked */ }
+            });
+        }
+
+        ['regime-chart', 'qqq-chart', 'banana-chart', 'rates-chart'].forEach(hideOnError);
+        initThemeToggle();
+        updateLastModified();
+        loadJson('spx-regime-results.json', renderSpx, function () {
+            sectionUnavailable('sb-spx', 'SPX Regime', 'Regime results');
+            sectionUnavailable('sb-qqq', 'QQQ Regime (Nasdaq 100 breadth)', 'ND readings');
+        });
+        loadJson('btc-banana.json', renderBanana, function () {
+            sectionUnavailable('sb-banana', 'BTC Banana', 'BTC banana data');
+        });
+        loadJson('rates.json', renderRates, function () {
+            sectionUnavailable('sb-rates', 'US Rates', 'Rates data');
+        });
+    </script>
+</body>
+</html>
