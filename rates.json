@@ -1,0 +1,32 @@
+{
+  "fed_funds": {
+    "label": "Fed Funds (effective)",
+    "value": 3.88,
+    "asof": "2026-10-15",
+    "change_1y": -0.22
+  },
+  "us03m": {
+    "label": "3M",
+    "value": 4.173,
+    "asof": "2026-10-15",
+    "change_1y": 0.229
+  },
+  "us02y": {
+    "label": "2Y",
+    "value": 4.715,
+    "asof": "2026-10-15",
+    "change_1y": 1.293
+  },
+  "us10y": {
+    "label": "10Y",
+    "value": 5.081,
+    "asof": "2026-10-15",
+    "change_1y": 1.106
+  },
+  "us30y": {
+    "label": "30Y",
+    "value": 5.426,
+    "asof": "2026-10-15",
+    "change_1y": 0.841
+  }
+}
